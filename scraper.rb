@@ -16,15 +16,27 @@ text_all_rows = rows.map do |row|
   # I don't totally understand what this is doing, but text_all_rows is an array with the values as desired
 end
 
-text_all_rows.shift(1)
+rows_clean = text_all_rows.drop(1)
+
+byebug
 
 CSV.open("#{timestamp}.csv", "w") do |csv|
   csv << ["Data as of","#{time_formatted}"]
-  text_all_rows.each {|row| csv << row } 
+  rows_clean.each {|row| csv << row } 
 end
 
 =begin
 	
+Get numeric value for specific row
+total_positive = rows_clean[1].last.gsub(",","").to_i
+
+https://www.twilio.com/blog/2017/03/google-spreadsheets-ruby.html
+
+https://developers.google.com/sheets/api/samples/writing
+https://developers.google.com/sheets/api/samples/reading
+
+https://www.twilio.com/docs/sms/services/tutorials/how-to-send-sms-messages-services-ruby
+
 https://stackoverflow.com/questions/34781600/how-to-parse-a-html-table-with-nokogiri
 https://ruby-doc.org/stdlib-2.7.1/libdoc/csv/rdoc/CSV.html
 https://www.rubyguides.com/2015/12/ruby-time/

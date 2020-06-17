@@ -28,13 +28,17 @@ end
 =begin
 	
 Get numeric value for specific row
-total_positive = rows_clean[1].last.gsub(",","").to_i
+total_positive = rows_clean[1].last.gsub(",","").to_i # ex 6/13: "9,314" -> "9314"
+age_group_1 = rows_clean[3].last.gsub(",","").to_i # ex 6/13: "196" -> "196"
 
+Solid quickstart for sheets
 https://www.twilio.com/blog/2017/03/google-spreadsheets-ruby.html
 
+Sheets api docs
 https://developers.google.com/sheets/api/samples/writing
 https://developers.google.com/sheets/api/samples/reading
 
+Twilio send sms docs
 https://www.twilio.com/docs/sms/services/tutorials/how-to-send-sms-messages-services-ruby
 
 https://stackoverflow.com/questions/34781600/how-to-parse-a-html-table-with-nokogiri

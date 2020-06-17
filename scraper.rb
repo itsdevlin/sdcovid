@@ -31,6 +31,28 @@ Get numeric value for specific row
 total_positive = rows_clean[1].last.gsub(",","").to_i # ex 6/13: "9,314" -> "9314"
 age_group_1 = rows_clean[3].last.gsub(",","").to_i # ex 6/13: "196" -> "196"
 
+^ nah, do a .each do loop
+
+googlespreadsheetgem = GoogleDrive.get("asdf")
+rows_clean.each do |col_arr|
+  googlespreadsheetgem[col_arr[0]] = col_arr[1]
+end  
+
+worksheet.insert_rows(worksheet.num_rows + 1, [["Hello!", "This", "was", "inserted", "at", "the", "bottom"]])
+worksheet.save
+
+all_values = rows_clean.map(&:last)
+worksheet.insert_rows(worksheet.num_rows + 1, [all_values])
+worksheet.save
+
+all_values = []
+rows_clean.each do |arr|
+  all_values.push(arr[1].delete(',').to_i)
+end
+worksheet.insert_rows(worksheet.num_rows + 1, [all_values])
+worksheet.save
+
+
 Solid quickstart for sheets
 https://www.twilio.com/blog/2017/03/google-spreadsheets-ruby.html
 

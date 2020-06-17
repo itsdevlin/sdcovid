@@ -1,47 +1,70 @@
 require 'nokogiri'
 require 'httparty'
 require 'byebug'
+require 'csv'
 
-def scraper
-	url = "https://www.sandiegocounty.gov/content/sdc/hhsa/programs/phs/community_epidemiology/dc/2019-nCoV/status.html"
-	unparsed_page = HTTParty.get(url)
-	parsed_page = Nokogiri::HTML(unparsed_page)
-	full_table = parsed_page.css('div.table.parbase.section')
-	full_table.search('tr').each do |tr|
-	cells = tr.search('th, td')
-	puts cells.text
-	end
+timestamp = Time.now.to_i
+time_formatted = Time.now.strftime("%m/%d/%Y %k:%M")
+url = "https://www.sandiegocounty.gov/content/sdc/hhsa/programs/phs/community_epidemiology/dc/2019-nCoV/status.html"
+unparsed_page = HTTParty.get(url)
+parsed_page = Nokogiri::HTML(unparsed_page)
+full_table = parsed_page.css('div.table.parbase.section')
+rows = full_table.css('tr') # get all rows (<tr>s)
 
-	byebug
-
-
+text_all_rows = rows.map do |row|
+  row_values = row.css('td').map(&:text) # get the text of each individual value (<td>)
+  # I don't totally understand what this is doing, but text_all_rows is an array with the values as desired
 end
 
-scraper
+rows_clean = text_all_rows.drop(1)
 
-# div.table.parbase.section
+byebug
 
+CSV.open("#{timestamp}.csv", "w") do |csv|
+  csv << ["Data as of","#{time_formatted}"]
+  rows_clean.each {|row| csv << row } 
+end
 
 =begin
 	
+Get numeric value for specific row
+total_positive = rows_clean[1].last.gsub(",","").to_i # ex 6/13: "9,314" -> "9314"
+age_group_1 = rows_clean[3].last.gsub(",","").to_i # ex 6/13: "196" -> "196"
 
+^ nah, do a .each do loop
 
-(byebug) full_table = parsed_page.css('div.table.parbase.section')
+googlespreadsheetgem = GoogleDrive.get("asdf")
+rows_clean.each do |col_arr|
+  googlespreadsheetgem[col_arr[0]] = col_arr[1]
+end  
 
-full_table.css('td').first
-// full first row of everything
+worksheet.insert_rows(worksheet.num_rows + 1, [["Hello!", "This", "was", "inserted", "at", "the", "bottom"]])
+worksheet.save
 
-full_table.css('tr').first.text
-// text strings of the first row
+all_values = rows_clean.map(&:last)
+worksheet.insert_rows(worksheet.num_rows + 1, [all_values])
+worksheet.save
 
-full_table.css('tr')[0]
-// first row 
-
-	
-
-
-full_table.search('tr').each do |tr|
-	cells = tr.search('th, td')
+all_values = []
+rows_clean.each do |arr|
+  all_values.push(arr[1].delete(',').to_i)
 end
+worksheet.insert_rows(worksheet.num_rows + 1, [all_values])
+worksheet.save
 
+
+Solid quickstart for sheets
+https://www.twilio.com/blog/2017/03/google-spreadsheets-ruby.html
+
+Sheets api docs
+https://developers.google.com/sheets/api/samples/writing
+https://developers.google.com/sheets/api/samples/reading
+
+Twilio send sms docs
+https://www.twilio.com/docs/sms/services/tutorials/how-to-send-sms-messages-services-ruby
+
+https://stackoverflow.com/questions/34781600/how-to-parse-a-html-table-with-nokogiri
+https://ruby-doc.org/stdlib-2.7.1/libdoc/csv/rdoc/CSV.html
+https://www.rubyguides.com/2015/12/ruby-time/
+	
 =end
